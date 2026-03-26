@@ -27,4 +27,4 @@ Datová vrstva využívá Prisma ORM nad relační databází (SQLite pro lokál
 - Úprava barveného profilu rozhraní (Light / Dark mode toggle).
 - SEO architektura: Podpora `robots.txt`, staticky generované sitemapy i OpenGraph definic závislých na kontextu dané stránky.
 
- ` Aplikace bude po zkompilování dostupná na adrese `http://localhost:3000`.
+ Aplikace bude po zkompilování dostupná na adrese `http://localhost:3000`.
