@@ -14,9 +14,11 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?
+  role          String    @default("USER")
   accounts      Account[]
   sessions      Session[]
   posts         Post[]
+  comments      Comment[]
 }
 
 model Account {
@@ -67,6 +69,7 @@ model Post {
   userId      String
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   tags        PostTag[]
+  comments    Comment[]
 }
 
 model Tag {
@@ -83,4 +86,14 @@ model PostTag {
   tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([postId, tagId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 }

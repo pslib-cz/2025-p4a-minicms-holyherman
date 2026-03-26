@@ -1,4 +1,5 @@
 import { auth, signIn, signOut } from "@/auth";
+import { ThemeToggle } from "./ThemeToggle";
 
 export default async function Navbar() {
   const session = await auth();
@@ -13,6 +14,7 @@ export default async function Navbar() {
             </a>
           </div>
           <div className="flex items-center space-x-4">
+            <ThemeToggle />
             {session?.user ? (
               <>
                 <a href="/dashboard" className="text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors">
@@ -26,9 +28,14 @@ export default async function Navbar() {
                 </a>
               </>
             ) : (
-              <a href="/login" className="text-sm px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors font-medium">
-                Sign In
-              </a>
+              <>
+                <a href="/login" className="text-sm px-4 py-2 rounded-md border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors font-medium">
+                  Log in
+                </a>
+                <a href="/register" className="text-sm px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors font-medium">
+                  Sign up
+                </a>
+              </>
             )}
           </div>
         </div>

@@ -1,5 +1,7 @@
 import { signIn } from "@/auth";
 import Link from "next/link";
+import { AuthError } from "next-auth";
+import { redirect } from "next/navigation";
 
 export default async function LoginPage({
   searchParams,
@@ -31,7 +33,17 @@ export default async function LoginPage({
           <form
             action={async (formData) => {
               "use server";
-              await signIn("credentials", formData);
+              try {
+                await signIn("credentials", formData);
+              } catch (error) {
+                if (error instanceof AuthError) {
+                  if (error.type === "CredentialsSignin") {
+                    redirect("/login?error=CredentialsSignin");
+                  }
+                  redirect("/login?error=Default");
+                }
+                throw error;
+              }
             }}
             className="space-y-6"
           >
