@@ -53,40 +53,40 @@ export default async function Home(props: {
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
-      <div className="text-center mb-16">
-        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-white mb-4">
+    <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
+      <div className="text-center mb-20">
+        <h1 className="font-[var(--font-display)] text-5xl sm:text-6xl font-extrabold tracking-tight text-on-surface mb-5" style={{ letterSpacing: "-0.02em" }}>
           The MiniCMS Blog
         </h1>
-        <p className="text-xl text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto">
+        <p className="text-xl text-on-surface-variant max-w-2xl mx-auto font-[var(--font-body)] leading-relaxed">
           Discover the latest articles, tutorials, and insights published by our community.
         </p>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-8">
+      <div className="flex flex-col lg:flex-row gap-10">
         {/* Sidebar for Filters */}
         <aside className="w-full lg:w-64 shrink-0">
-          <div className="sticky top-24 bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
-            <h2 className="text-lg font-bold text-zinc-900 dark:text-white mb-4">Search</h2>
-            <form action="/" method="GET" className="mb-8">
+          <div className="sticky top-24 bg-surface-lowest p-7 rounded-3xl shadow-ambient">
+            <h2 className="font-[var(--font-display)] text-lg font-bold text-on-surface mb-5">Search</h2>
+            <form action="/" method="GET" className="mb-10">
               {tagFilter && <input type="hidden" name="tag" value={tagFilter} />}
               <input
                 type="text"
                 name="search"
                 defaultValue={search}
                 placeholder="Search articles..."
-                className="w-full rounded-lg border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 text-sm focus:border-blue-500 focus:ring-blue-500 dark:text-white px-4 py-2"
+                className="w-full rounded-xl bg-surface-lowest ghost-border ghost-border-focus text-sm text-on-surface px-4 py-2.5 outline-none transition-colors font-[var(--font-body)] placeholder:text-on-surface-variant/50"
               />
-              <button type="submit" className="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg text-sm transition-colors">
+              <button type="submit" className="mt-3 w-full gradient-primary text-on-primary font-semibold py-2.5 rounded-full text-sm transition-opacity hover:opacity-90">
                 Search
               </button>
             </form>
 
-            <h2 className="text-lg font-bold text-zinc-900 dark:text-white mb-4">Tags</h2>
+            <h2 className="font-[var(--font-display)] text-lg font-bold text-on-surface mb-5">Tags</h2>
             <div className="flex flex-wrap gap-2">
               <Link
                 href={`/?search=${search}`}
-                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${!tagFilter ? "bg-blue-600 text-white" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"}`}
+                className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-colors ${!tagFilter ? "gradient-primary text-on-primary" : "bg-surface-low text-on-surface-variant hover:text-primary"}`}
               >
                 All
               </Link>
@@ -94,7 +94,7 @@ export default async function Home(props: {
                 <Link
                   key={tag.id}
                   href={`/?tag=${tag.slug}&search=${search}`}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${tagFilter === tag.slug ? "bg-blue-600 text-white" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"}`}
+                  className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-colors ${tagFilter === tag.slug ? "gradient-primary text-on-primary" : "bg-surface-low text-on-surface-variant hover:text-primary"}`}
                 >
                   {tag.name}
                 </Link>
@@ -106,10 +106,10 @@ export default async function Home(props: {
         {/* Main Content Area */}
         <div className="flex-1">
           {posts.length === 0 ? (
-            <div className="text-center py-24 bg-white dark:bg-zinc-900 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700">
-              <p className="text-lg text-zinc-500 dark:text-zinc-400">No matching articles found.</p>
+            <div className="text-center py-28 bg-surface-lowest rounded-3xl shadow-ambient">
+              <p className="text-lg text-on-surface-variant font-[var(--font-body)]">No matching articles found.</p>
               {(search || tagFilter) && (
-                <Link href="/" className="text-blue-600 hover:text-blue-500 font-medium mt-4 inline-block">
+                <Link href="/" className="text-primary hover:text-primary-container font-semibold mt-4 inline-block transition-colors">
                   Clear filters
                 </Link>
               )}
@@ -124,12 +124,12 @@ export default async function Home(props: {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="mt-12 flex justify-center gap-2">
+            <div className="mt-16 flex justify-center gap-2">
               {Array.from({ length: totalPages }).map((_, i) => (
                 <Link
                   key={i}
                   href={`/?page=${i + 1}&search=${search}&tag=${tagFilter}`}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${page === i + 1 ? "bg-blue-600 text-white" : "bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800"}`}
+                  className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${page === i + 1 ? "gradient-primary text-on-primary" : "bg-surface-lowest text-on-surface-variant shadow-ambient hover:text-primary"}`}
                 >
                   {i + 1}
                 </Link>

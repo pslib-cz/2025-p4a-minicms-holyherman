@@ -3,28 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  FormControl,
-  FormHelperText,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-  CircularProgress,
-  Chip,
-  OutlinedInput,
-} from "@mui/material";
-import SaveIcon from "@mui/icons-material/Save";
-import PublicIcon from "@mui/icons-material/Public";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import dynamic from "next/dynamic";
 
-// Dynamically import TipTap editor so SSR doesn't crash on browser APIs
 const Editor = dynamic(() => import("@/app/components/Editor"), { ssr: false });
 
 type Tag = { id: string; name: string };
@@ -34,14 +14,15 @@ export default function NewPostPage() {
   const [saveLoading, setSaveLoading] = useState(false);
   const [publishLoading, setPublishLoading] = useState(false);
   const [tags, setTags] = useState<Tag[]>([]);
-  
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [showTagDropdown, setShowTagDropdown] = useState(false);
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     content: "<p></p>",
-    tags: [] as string[],
   });
-  
+
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -53,18 +34,22 @@ export default function NewPostPage() {
 
   const handleChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear error for this field
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
+  const toggleTag = (tagId: string) => {
+    setSelectedTags((prev) =>
+      prev.includes(tagId) ? prev.filter((t) => t !== tagId) : [...prev, tagId]
+    );
+  };
+
   const handleSave = async (publishAction: boolean = false) => {
-    // Basic validation
     const newErrors: Record<string, string> = {};
     if (!formData.title.trim()) newErrors.title = "Title is required";
     if (!formData.content.trim() || formData.content === "<p></p>") newErrors.content = "Content is required";
-    
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -82,6 +67,7 @@ export default function NewPostPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
+          tags: selectedTags,
           concept: !publishAction,
           published: publishAction,
         }),
@@ -103,109 +89,135 @@ export default function NewPostPage() {
   };
 
   return (
-    <Box sx={{ maxWidth: 900, mx: "auto" }}>
-      <Button
-        component={Link}
+    <div className="max-w-[900px] mx-auto">
+      <Link
         href="/dashboard/posts"
-        startIcon={<ArrowBackIcon />}
-        sx={{ mb: 3 }}
+        className="inline-flex items-center gap-1.5 text-sm font-semibold text-on-surface-variant hover:text-primary transition-colors mb-6"
       >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
         Back to Posts
-      </Button>
+      </Link>
 
-      <Typography variant="h4" component="h1" fontWeight="bold" mb={4}>
+      <h1 className="font-[var(--font-display)] text-2xl font-bold text-on-surface mb-8">
         Create New Post
-      </Typography>
+      </h1>
 
-      <Card variant="outlined" sx={{ borderRadius: 2 }}>
-        <CardContent sx={{ p: 4, pt: 3 }}>
-          <form onSubmit={(e) => { e.preventDefault(); handleSave(false); }}>
-            <TextField
-              label="Post Title"
-              fullWidth
-              variant="outlined"
+      <div className="bg-surface-lowest rounded-3xl shadow-ambient p-8">
+        <form onSubmit={(e) => { e.preventDefault(); handleSave(false); }}>
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-on-surface-variant font-[var(--font-body)] mb-2">
+              Post Title *
+            </label>
+            <input
+              type="text"
               value={formData.title}
               onChange={(e) => handleChange("title", e.target.value)}
-              error={!!errors.title}
-              helperText={errors.title}
-              margin="normal"
+              className={`block w-full px-4 py-2.5 rounded-xl bg-surface-lowest text-on-surface text-sm outline-none transition-colors font-[var(--font-body)] ${errors.title ? "border border-secondary" : "ghost-border ghost-border-focus"}`}
               required
             />
+            {errors.title && <p className="mt-1.5 text-xs text-secondary font-medium">{errors.title}</p>}
+          </div>
 
-            <TextField
-              label="Short Description (SEO & Preview)"
-              fullWidth
-              variant="outlined"
-              multiline
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-on-surface-variant font-[var(--font-body)] mb-2">
+              Short Description (SEO & Preview)
+            </label>
+            <textarea
               rows={2}
               value={formData.description}
               onChange={(e) => handleChange("description", e.target.value)}
-              margin="normal"
+              className="block w-full px-4 py-2.5 rounded-xl bg-surface-lowest ghost-border ghost-border-focus text-on-surface text-sm outline-none transition-colors font-[var(--font-body)]"
             />
+          </div>
 
-            <FormControl fullWidth margin="normal">
-              <InputLabel id="tags-label">Tags</InputLabel>
-              <Select
-                labelId="tags-label"
-                multiple
-                value={formData.tags}
-                onChange={(e) => handleChange("tags", typeof e.target.value === "string" ? e.target.value.split(",") : e.target.value)}
-                input={<OutlinedInput id="select-multiple-chip" label="Tags" />}
-                renderValue={(selected) => (
-                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                    {selected.map((value) => {
-                      const tag = tags.find((t) => t.id === value);
-                      return <Chip key={value} label={tag?.name || value} size="small" />;
-                    })}
-                  </Box>
-                )}
-              >
+          <div className="mb-6 relative">
+            <label className="block text-sm font-medium text-on-surface-variant font-[var(--font-body)] mb-2">
+              Tags
+            </label>
+            <div
+              onClick={() => setShowTagDropdown(!showTagDropdown)}
+              className="flex flex-wrap gap-1.5 min-h-[42px] px-4 py-2 rounded-xl bg-surface-lowest ghost-border cursor-pointer items-center"
+            >
+              {selectedTags.length === 0 ? (
+                <span className="text-sm text-on-surface-variant/50">Select tags...</span>
+              ) : (
+                selectedTags.map((tagId) => {
+                  const tag = tags.find((t) => t.id === tagId);
+                  return (
+                    <span key={tagId} className="chip-tag rounded-md px-2.5 py-0.5 text-xs font-semibold">
+                      {tag?.name || tagId}
+                    </span>
+                  );
+                })
+              )}
+            </div>
+            {showTagDropdown && (
+              <div className="absolute z-10 mt-1 w-full bg-surface-lowest rounded-xl shadow-ambient-lg py-2 max-h-48 overflow-y-auto">
                 {tags.map((tag) => (
-                  <MenuItem key={tag.id} value={tag.id}>
+                  <button
+                    key={tag.id}
+                    type="button"
+                    onClick={() => toggleTag(tag.id)}
+                    className={`w-full text-left px-4 py-2 text-sm font-medium transition-colors ${
+                      selectedTags.includes(tag.id)
+                        ? "text-primary bg-primary-fixed/10"
+                        : "text-on-surface-variant hover:bg-surface-low"
+                    }`}
+                  >
                     {tag.name}
-                  </MenuItem>
+                  </button>
                 ))}
-              </Select>
-            </FormControl>
+              </div>
+            )}
+          </div>
 
-            <FormControl fullWidth margin="normal" error={!!errors.content}>
-              <Typography variant="subtitle2" color="text.secondary" mb={1} sx={{ pl: 0.5 }}>
-                Content *
-              </Typography>
-              <Editor
-                content={formData.content}
-                onChange={(html) => handleChange("content", html)}
-              />
-              {errors.content && <FormHelperText>{errors.content}</FormHelperText>}
-            </FormControl>
+          <div className="mb-8">
+            <label className="block text-sm font-medium text-on-surface-variant font-[var(--font-body)] mb-2">
+              Content *
+            </label>
+            <Editor
+              content={formData.content}
+              onChange={(html) => handleChange("content", html)}
+            />
+            {errors.content && <p className="mt-1.5 text-xs text-secondary font-medium">{errors.content}</p>}
+          </div>
 
-            <Box sx={{ mt: 4, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <Button
-                type="submit"
-                variant="outlined"
-                size="large"
-                startIcon={saveLoading ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
-                disabled={saveLoading || publishLoading}
-              >
-                Save as Draft
-              </Button>
+          <div className="flex justify-between items-center">
+            <button
+              type="submit"
+              disabled={saveLoading || publishLoading}
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full ghost-border text-sm font-semibold text-on-surface-variant hover:text-primary hover:border-primary transition-colors disabled:opacity-40"
+            >
+              {saveLoading ? (
+                <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin"></div>
+              ) : (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                </svg>
+              )}
+              Save as Draft
+            </button>
 
-              <Button
-                type="button"
-                variant="contained"
-                color="success"
-                size="large"
-                startIcon={publishLoading ? <CircularProgress size={20} color="inherit" /> : <PublicIcon />}
-                disabled={saveLoading || publishLoading}
-                disableElevation
-                onClick={() => handleSave(true)}
-              >
-                Publish Post
-              </Button>
-            </Box>
-          </form>
-        </CardContent>
-      </Card>
-    </Box>
+            <button
+              type="button"
+              onClick={() => handleSave(true)}
+              disabled={saveLoading || publishLoading}
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full gradient-primary text-sm font-semibold text-on-primary hover:opacity-90 transition-opacity disabled:opacity-40"
+            >
+              {publishLoading ? (
+                <div className="w-4 h-4 rounded-full border-2 border-on-primary border-t-transparent animate-spin"></div>
+              ) : (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              )}
+              Publish Post
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }

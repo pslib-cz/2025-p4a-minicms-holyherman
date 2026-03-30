@@ -2,26 +2,163 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Primary (Emerald) */
+  --primary: #006c49;
+  --primary-container: #10b981;
+  --primary-fixed: #6ffbbe;
+  --on-primary: #ffffff;
+  --on-primary-fixed: #00391f;
+
+  /* Secondary (Amber) */
+  --secondary: #855300;
+  --secondary-container: #fea619;
+  --on-secondary: #ffffff;
+  --on-secondary-container: #2b1700;
+
+  /* Tertiary (Digital Blue) */
+  --tertiary: #005ac2;
+
+  /* Surfaces */
+  --surface: #f8f9ff;
+  --surface-container-low: #eff4ff;
+  --surface-container-lowest: #ffffff;
+  --on-surface: #0b1c30;
+  --on-surface-variant: #3f4946;
+
+  /* Outline */
+  --outline-variant: #bbcabf;
+
+  /* Background */
+  --background: #f8f9ff;
+  --foreground: #0b1c30;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primary: var(--primary);
+  --color-primary-container: var(--primary-container);
+  --color-primary-fixed: var(--primary-fixed);
+  --color-on-primary: var(--on-primary);
+  --color-on-primary-fixed: var(--on-primary-fixed);
+  --color-secondary: var(--secondary);
+  --color-secondary-container: var(--secondary-container);
+  --color-on-secondary: var(--on-secondary);
+  --color-on-secondary-container: var(--on-secondary-container);
+  --color-tertiary: var(--tertiary);
+  --color-surface: var(--surface);
+  --color-surface-low: var(--surface-container-low);
+  --color-surface-lowest: var(--surface-container-lowest);
+  --color-on-surface: var(--on-surface);
+  --color-on-surface-variant: var(--on-surface-variant);
+  --color-outline-variant: var(--outline-variant);
+  --font-display: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'Manrope', sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --primary: #6ffbbe;
+  --primary-container: #005234;
+  --primary-fixed: #6ffbbe;
+  --on-primary: #00391f;
+  --on-primary-fixed: #00391f;
+
+  --secondary: #fea619;
+  --secondary-container: #654000;
+  --on-secondary: #462a00;
+  --on-secondary-container: #ffdcb0;
+
+  --tertiary: #a8c8ff;
+
+  --surface: #0f1720;
+  --surface-container-low: #161e28;
+  --surface-container-lowest: #0a1018;
+  --on-surface: #dde3ea;
+  --on-surface-variant: #bfc9c3;
+
+  --outline-variant: #3f4946;
+
+  --background: #0f1720;
+  --foreground: #dde3ea;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+}
+
+/* Ambient shadow utility */
+.shadow-ambient {
+  box-shadow: 0 8px 32px rgba(11, 28, 48, 0.06);
+}
+
+.shadow-ambient-lg {
+  box-shadow: 0 16px 64px rgba(11, 28, 48, 0.08);
+}
+
+/* Ghost border utility */
+.ghost-border {
+  border: 1px solid rgba(187, 202, 191, 0.2);
+}
+
+.ghost-border-focus:focus {
+  border-color: var(--primary);
+}
+
+/* Glass morphism */
+.glass {
+  background: rgba(248, 249, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.dark .glass {
+  background: rgba(15, 23, 32, 0.75);
+}
+
+/* Primary gradient */
+.gradient-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-container));
+}
+
+/* Prose styling overrides for emerald links */
+.prose a {
+  color: var(--primary);
+}
+
+.prose a:hover {
+  color: var(--primary-container);
+}
+
+/* Tag chips with vibrant emerald */
+.chip-tag {
+  background-color: var(--primary-fixed);
+  color: var(--on-primary-fixed);
+}
+
+.dark .chip-tag {
+  background-color: rgba(111, 251, 190, 0.15);
+  color: var(--primary-fixed);
+}
+
+/* Input styling */
+input:not([type="checkbox"]):not([type="radio"]),
+textarea,
+select {
+  font-family: var(--font-body);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--outline-variant);
+  border-radius: 999px;
 }

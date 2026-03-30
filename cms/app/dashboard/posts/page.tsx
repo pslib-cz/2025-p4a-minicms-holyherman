@@ -2,27 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import {
-  Box,
-  Button,
-  Card,
-  Chip,
-  IconButton,
-  Pagination,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-  CircularProgress,
-} from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
 type Post = {
   id: string;
@@ -76,111 +55,141 @@ export default function PostsPage() {
   };
 
   return (
-    <Box>
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 4, alignItems: "center" }}>
-        <Typography variant="h4" component="h1" fontWeight="bold">
+    <div>
+      <div className="flex justify-between mb-8 items-center">
+        <h2 className="font-[var(--font-display)] text-2xl font-bold text-on-surface">
           My Posts
-        </Typography>
-        <Button
-          component={Link}
+        </h2>
+        <Link
           href="/dashboard/posts/new"
-          variant="contained"
-          startIcon={<AddIcon />}
-          disableElevation
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full gradient-primary text-sm font-semibold text-on-primary hover:opacity-90 transition-opacity"
         >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
           Create Post
-        </Button>
-      </Box>
+        </Link>
+      </div>
 
-      <Card variant="outlined" sx={{ borderRadius: 2 }}>
-        <TableContainer component={Paper} elevation={0}>
-          <Table sx={{ minWidth: 650 }} aria-label="posts table">
-            <TableHead sx={{ bgcolor: "grey.50" }}>
-              <TableRow>
-                <TableCell>Title</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Tags</TableCell>
-                <TableCell>Date</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
+      <div className="bg-surface-lowest rounded-3xl shadow-ambient overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[650px]">
+            <thead>
+              <tr className="bg-surface-low">
+                <th className="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-on-surface-variant font-[var(--font-body)]">Title</th>
+                <th className="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-on-surface-variant font-[var(--font-body)]">Status</th>
+                <th className="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-on-surface-variant font-[var(--font-body)]">Tags</th>
+                <th className="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-on-surface-variant font-[var(--font-body)]">Date</th>
+                <th className="text-right px-6 py-4 text-xs font-bold uppercase tracking-wider text-on-surface-variant font-[var(--font-body)]">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
               {loading ? (
-                <TableRow>
-                  <TableCell colSpan={5} align="center" sx={{ py: 10 }}>
-                    <CircularProgress />
-                  </TableCell>
-                </TableRow>
+                <tr>
+                  <td colSpan={5} className="text-center py-16">
+                    <div className="inline-block w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>
+                  </td>
+                </tr>
               ) : posts.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
-                    <Typography color="text.secondary">You haven't created any posts yet.</Typography>
-                    <Button component={Link} href="/dashboard/posts/new" sx={{ mt: 2 }} variant="outlined">
+                <tr>
+                  <td colSpan={5} className="text-center py-12">
+                    <p className="text-on-surface-variant font-[var(--font-body)] mb-4">You haven't created any posts yet.</p>
+                    <Link href="/dashboard/posts/new" className="text-primary font-semibold hover:text-primary-container transition-colors">
                       Create your first post
-                    </Button>
-                  </TableCell>
-                </TableRow>
+                    </Link>
+                  </td>
+                </tr>
               ) : (
-                posts.map((post) => (
-                  <TableRow key={post.id} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-                    <TableCell component="th" scope="row">
-                      <Typography variant="body1" fontWeight="medium">
-                        {post.title}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        /{post.slug}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
+                posts.map((post, i) => (
+                  <tr
+                    key={post.id}
+                    className={i < posts.length - 1 ? "" : ""}
+                    style={i < posts.length - 1 ? {} : {}}
+                  >
+                    <td className="px-6 py-5">
+                      <p className="font-semibold text-on-surface text-sm">{post.title}</p>
+                      <p className="text-xs text-on-surface-variant mt-0.5 font-[var(--font-body)]">/{post.slug}</p>
+                    </td>
+                    <td className="px-6 py-5">
                       {post.concept ? (
-                        <Chip label="Draft" color="default" size="small" />
+                        <span className="inline-flex px-3 py-1 rounded-full text-xs font-bold bg-secondary-container/20 text-secondary uppercase tracking-wider">Draft</span>
                       ) : post.published ? (
-                        <Chip label="Published" color="success" size="small" />
+                        <span className="inline-flex px-3 py-1 rounded-full text-xs font-bold bg-primary-fixed/20 text-primary uppercase tracking-wider">Published</span>
                       ) : (
-                        <Chip label="Archived" color="warning" size="small" />
+                        <span className="inline-flex px-3 py-1 rounded-full text-xs font-bold bg-secondary-container/30 text-secondary uppercase tracking-wider">Archived</span>
                       )}
-                    </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
+                    </td>
+                    <td className="px-6 py-5">
+                      <div className="flex gap-1.5 flex-wrap">
                         {post.tags.map((t) => (
-                          <Chip key={t.tag.id} label={t.tag.name} size="small" variant="outlined" />
+                          <span key={t.tag.id} className="chip-tag rounded-md px-2.5 py-0.5 text-xs font-semibold">
+                            {t.tag.name}
+                          </span>
                         ))}
-                      </Box>
-                    </TableCell>
-                    <TableCell>
+                      </div>
+                    </td>
+                    <td className="px-6 py-5 text-sm text-on-surface-variant font-[var(--font-body)]">
                       {post.publishDate ? new Date(post.publishDate).toLocaleDateString() : "-"}
-                    </TableCell>
-                    <TableCell align="right">
-                      {post.published && !post.concept && (
-                        <IconButton component="a" href={`/posts/${post.slug}`} target="_blank" size="small" color="primary" title="View Public Post">
-                          <OpenInNewIcon fontSize="small" />
-                        </IconButton>
-                      )}
-                      <IconButton component={Link} href={`/dashboard/posts/${post.id}/edit`} size="small" color="info" title="Edit">
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton onClick={() => handleDelete(post.id)} size="small" color="error" title="Delete">
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                    <td className="px-6 py-5 text-right">
+                      <div className="flex justify-end gap-1">
+                        {post.published && !post.concept && (
+                          <a
+                            href={`/posts/${post.slug}`}
+                            target="_blank"
+                            className="p-2 rounded-xl text-on-surface-variant hover:text-tertiary hover:bg-surface-low transition-colors"
+                            title="View Public Post"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                          </a>
+                        )}
+                        <Link
+                          href={`/dashboard/posts/${post.id}/edit`}
+                          className="p-2 rounded-xl text-on-surface-variant hover:text-primary hover:bg-surface-low transition-colors"
+                          title="Edit"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(post.id)}
+                          className="p-2 rounded-xl text-on-surface-variant hover:text-secondary hover:bg-secondary-container/10 transition-colors"
+                          title="Delete"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
                 ))
               )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Card>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       {!loading && totalPages > 1 && (
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-          <Pagination
-            count={totalPages}
-            page={page}
-            onChange={(_, val) => setPage(val)}
-            color="primary"
-          />
-        </Box>
+        <div className="flex justify-center mt-8 gap-2">
+          {Array.from({ length: totalPages }).map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setPage(i + 1)}
+              className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
+                page === i + 1
+                  ? "gradient-primary text-on-primary"
+                  : "bg-surface-lowest text-on-surface-variant shadow-ambient hover:text-primary"
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+        </div>
       )}
-    </Box>
+    </div>
   );
 }

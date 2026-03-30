@@ -12,24 +12,24 @@ export default async function LoginPage({
   const error = params?.error;
 
   return (
-    <div className="flex min-h-[80vh] flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="flex min-h-[80vh] flex-col justify-center py-16 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-zinc-900 dark:text-white">
+        <h2 className="mt-6 text-center font-[var(--font-display)] text-3xl font-extrabold text-on-surface">
           Sign in to your account
         </h2>
-        <p className="mt-2 text-center text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-3 text-center text-sm text-on-surface-variant font-[var(--font-body)]">
           Or&nbsp;
           <Link
             href="/register"
-            className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
+            className="font-semibold text-primary hover:text-primary-container transition-colors"
           >
             register to create a new one
           </Link>
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white dark:bg-zinc-900 py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-zinc-200 dark:border-zinc-800">
+      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-surface-lowest py-10 px-6 shadow-ambient rounded-3xl sm:px-10">
           <form
             action={async (formData) => {
               "use server";
@@ -45,74 +45,70 @@ export default async function LoginPage({
                 throw error;
               }
             }}
-            className="space-y-6"
+            className="space-y-7"
           >
             {error === "CredentialsSignin" && (
-              <div className="p-3 rounded-md bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 text-sm">
+              <div className="p-4 rounded-xl bg-secondary-container/20 text-secondary text-sm font-medium">
                 Invalid email or password
               </div>
             )}
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+                className="block text-sm font-medium text-on-surface-variant font-[var(--font-body)] mb-2"
               >
                 Email address
               </label>
-              <div className="mt-1">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  className="appearance-none block w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md shadow-sm placeholder-zinc-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-zinc-800 dark:text-white"
-                />
-              </div>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                className="block w-full px-4 py-2.5 rounded-xl bg-surface-lowest ghost-border ghost-border-focus text-on-surface text-sm outline-none transition-colors font-[var(--font-body)] placeholder:text-on-surface-variant/50"
+              />
             </div>
 
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+                className="block text-sm font-medium text-on-surface-variant font-[var(--font-body)] mb-2"
               >
                 Password
               </label>
-              <div className="mt-1">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  className="appearance-none block w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md shadow-sm placeholder-zinc-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-zinc-800 dark:text-white"
-                />
-              </div>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                className="block w-full px-4 py-2.5 rounded-xl bg-surface-lowest ghost-border ghost-border-focus text-on-surface text-sm outline-none transition-colors font-[var(--font-body)] placeholder:text-on-surface-variant/50"
+              />
             </div>
 
             <div>
               <button
                 type="submit"
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="w-full flex justify-center py-2.5 px-4 rounded-full gradient-primary text-sm font-semibold text-on-primary hover:opacity-90 transition-opacity"
               >
                 Sign in with Credentials
               </button>
             </div>
           </form>
 
-          <div className="mt-6">
+          <div className="mt-8">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-zinc-300 dark:border-zinc-700" />
+                <div className="w-full" style={{ borderTop: "1px solid rgba(187, 202, 191, 0.2)" }} />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white dark:bg-zinc-900 text-zinc-500">
+                <span className="px-3 bg-surface-lowest text-on-surface-variant font-[var(--font-body)]">
                   Or continue with
                 </span>
               </div>
             </div>
 
-            <div className="mt-6 grid grid-cols-2 gap-3">
+            <div className="mt-7 grid grid-cols-2 gap-4">
               <form
                 action={async () => {
                   "use server";
@@ -121,7 +117,7 @@ export default async function LoginPage({
               >
                 <button
                   type="submit"
-                  className="w-full inline-flex justify-center py-2 px-4 border border-zinc-300 dark:border-zinc-700 rounded-md shadow-sm bg-white dark:bg-zinc-800 text-sm font-medium text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-700"
+                  className="w-full inline-flex justify-center py-2.5 px-4 rounded-full bg-surface-low text-sm font-semibold text-on-surface-variant hover:text-primary transition-colors"
                 >
                   <span className="sr-only">Sign in with GitHub</span>
                   <svg
@@ -146,7 +142,7 @@ export default async function LoginPage({
               >
                 <button
                   type="submit"
-                  className="w-full inline-flex justify-center py-2 px-4 border border-zinc-300 dark:border-zinc-700 rounded-md shadow-sm bg-white dark:bg-zinc-800 text-sm font-medium text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-700"
+                  className="w-full inline-flex justify-center py-2.5 px-4 rounded-full bg-surface-low text-sm font-semibold text-on-surface-variant hover:text-primary transition-colors"
                 >
                   <span className="sr-only">Sign in with Google</span>
                   <svg

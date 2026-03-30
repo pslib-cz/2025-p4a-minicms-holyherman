@@ -1,22 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  TextField,
-  Typography,
-  CircularProgress,
-  Divider,
-} from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import AddIcon from "@mui/icons-material/Add";
 
 type Tag = {
   id: string;
@@ -94,71 +78,76 @@ export default function TagsPage() {
   };
 
   return (
-    <Box sx={{ maxWidth: 800 }}>
-      <Typography variant="h4" component="h1" fontWeight="bold" mb={4}>
+    <div className="max-w-[800px]">
+      <h2 className="font-[var(--font-display)] text-2xl font-bold text-on-surface mb-8">
         Tags Management
-      </Typography>
+      </h2>
 
-      <Card variant="outlined" sx={{ mb: 4, borderRadius: 2 }}>
-        <CardContent>
-          <Typography variant="h6" mb={2}>Create New Tag</Typography>
-          <form onSubmit={handleCreate} style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>
-            <TextField
-              label="Tag Name"
-              variant="outlined"
-              size="small"
-              fullWidth
+      <div className="bg-surface-lowest rounded-3xl shadow-ambient p-7 mb-8">
+        <h3 className="font-[var(--font-display)] text-lg font-bold text-on-surface mb-5">Create New Tag</h3>
+        <form onSubmit={handleCreate} className="flex gap-4 items-start">
+          <div className="flex-1">
+            <input
+              type="text"
+              placeholder="Tag name"
               value={newTagName}
               onChange={(e) => setNewTagName(e.target.value)}
-              error={!!error}
-              helperText={error}
               disabled={creating}
+              className={`block w-full px-4 py-2.5 rounded-xl bg-surface-lowest text-on-surface text-sm outline-none transition-colors font-[var(--font-body)] placeholder:text-on-surface-variant/50 ${error ? "border border-secondary" : "ghost-border ghost-border-focus"}`}
             />
-            <Button
-              type="submit"
-              variant="contained"
-              disableElevation
-              startIcon={creating ? <CircularProgress size={20} color="inherit" /> : <AddIcon />}
-              disabled={!newTagName.trim() || creating}
-              sx={{ height: 40, whiteSpace: "nowrap" }}
-            >
-              Add Tag
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+            {error && <p className="mt-1.5 text-xs text-secondary font-medium">{error}</p>}
+          </div>
+          <button
+            type="submit"
+            disabled={!newTagName.trim() || creating}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full gradient-primary text-sm font-semibold text-on-primary hover:opacity-90 transition-opacity disabled:opacity-40 whitespace-nowrap"
+          >
+            {creating ? (
+              <div className="w-4 h-4 rounded-full border-2 border-on-primary border-t-transparent animate-spin"></div>
+            ) : (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+            )}
+            Add Tag
+          </button>
+        </form>
+      </div>
 
-      <Card variant="outlined" sx={{ borderRadius: 2 }}>
+      <div className="bg-surface-lowest rounded-3xl shadow-ambient overflow-hidden">
         {loading ? (
-          <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
-            <CircularProgress />
-          </Box>
+          <div className="flex justify-center py-12">
+            <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>
+          </div>
         ) : tags.length === 0 ? (
-          <Box sx={{ p: 4, textAlign: "center" }}>
-            <Typography color="text.secondary">No tags have been created yet.</Typography>
-          </Box>
+          <div className="py-12 text-center">
+            <p className="text-on-surface-variant font-[var(--font-body)]">No tags have been created yet.</p>
+          </div>
         ) : (
-          <List disablePadding>
+          <div className="py-2">
             {tags.map((tag, i) => (
-              <Box key={tag.id}>
-                <ListItem
-                  secondaryAction={
-                    <IconButton edge="end" aria-label="delete" color="error" onClick={() => handleDelete(tag.id)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  }
+              <div
+                key={tag.id}
+                className={`flex items-center justify-between px-7 py-4 ${i < tags.length - 1 ? "mb-1" : ""}`}
+              >
+                <div>
+                  <p className="font-semibold text-on-surface text-sm">{tag.name}</p>
+                  <p className="text-xs text-on-surface-variant mt-0.5 font-[var(--font-body)]">Slug: {tag.slug}</p>
+                </div>
+                <button
+                  onClick={() => handleDelete(tag.id)}
+                  className="p-2 rounded-xl text-on-surface-variant hover:text-secondary hover:bg-secondary-container/10 transition-colors"
+                  title="Delete tag"
                 >
-                  <ListItemText
-                    primary={<Typography fontWeight="medium">{tag.name}</Typography>}
-                    secondary={`Slug: ${tag.slug}`}
-                  />
-                </ListItem>
-                {i < tags.length - 1 && <Divider />}
-              </Box>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
             ))}
-          </List>
+          </div>
         )}
-      </Card>
-    </Box>
+      </div>
+    </div>
   );
 }
