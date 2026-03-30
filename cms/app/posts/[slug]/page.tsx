@@ -10,8 +10,6 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
-// Revalidate every 60 seconds
-export const revalidate = 60;
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const params = await props.params;
@@ -40,16 +38,8 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   };
 }
 
-export async function generateStaticParams() {
-  const posts = await prisma.post.findMany({
-    where: { published: true, concept: false },
-    select: { slug: true },
-  });
-
-  return posts.map((post: any) => ({
-    slug: post.slug,
-  }));
-}
+export const dynamicParams = true;
+export const dynamic = "force-dynamic";
 
 export default async function PostPage(props: Props) {
   const session = await auth();

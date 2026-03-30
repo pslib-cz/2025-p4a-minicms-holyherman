@@ -2,8 +2,7 @@ import { prisma } from "@/lib/prisma";
 import PostCard from "@/app/components/PostCard";
 import Link from "next/link";
 
-// ISR: revalidate this page every 60 seconds
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function Home(props: {
   searchParams?: Promise<{ search?: string; tag?: string; page?: string }>;
