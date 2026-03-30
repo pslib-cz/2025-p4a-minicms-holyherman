@@ -58,8 +58,8 @@ export default function DashboardLayout({
   const sidebar = (
     <div className="flex flex-col h-full bg-surface-lowest">
       <div className="flex items-center h-16 px-6">
-        <span className="font-[var(--font-display)] text-xl font-bold gradient-primary bg-clip-text text-transparent">
-          MiniCMS
+        <span className="font-[var(--font-display)] text-xl font-bold text-primary">
+          CMS
         </span>
       </div>
       <nav className="flex-1 px-3 py-4 space-y-1">
@@ -141,7 +141,7 @@ export default function DashboardLayout({
   );
 
   return (
-    <div className="flex w-full h-screen bg-surface-low">
+    <div className="flex w-full bg-surface-low" style={{ height: "calc(100vh - 64px)" }}>
       {/* Mobile overlay */}
       {mobileOpen && (
         <div

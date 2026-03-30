@@ -4,20 +4,36 @@ import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import PostCard from "@/app/components/PostCard";
+import AvatarUpload from "@/app/components/AvatarUpload";
 
 export default async function ProfilePage() {
   const session = await auth();
 
-  if (!session?.user?.id) {
-    redirect("/");
+  if (!session?.user) {
+    redirect("/login");
+  }
+
+  // Get user ID from session - try id first, fall back to email lookup
+  let userId = session.user.id;
+  if (!userId && session.user.email) {
+    const found = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true },
+    });
+    userId = found?.id;
+  }
+
+  if (!userId) {
+    redirect("/login");
   }
 
   const [user, posts] = await Promise.all([
     prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: userId },
+      select: { id: true, name: true, email: true, image: true, password: true },
     }),
     prisma.post.findMany({
-      where: { userId: session.user.id },
+      where: { userId },
       include: {
         user: true,
         tags: { include: { tag: true } },
@@ -31,6 +47,7 @@ export default async function ProfilePage() {
     redirect("/");
   }
 
+  const isCredentialsUser = !!user.password;
   const publishedPostsCount = posts.filter(
     (p) => p.published && !p.concept,
   ).length;
@@ -43,7 +60,9 @@ export default async function ProfilePage() {
         <div className="px-6 sm:px-10 pb-10">
           <div className="relative flex justify-between items-end -mt-14 sm:-mt-16 mb-8">
             <div className="p-1.5 bg-surface-lowest rounded-full inline-block">
-              {user.image ? (
+              {isCredentialsUser ? (
+                <AvatarUpload currentImage={user.image} userName={user.name} />
+              ) : user.image ? (
                 <Image
                   src={user.image}
                   alt={user.name || "User Profile"}

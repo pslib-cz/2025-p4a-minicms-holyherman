@@ -106,7 +106,7 @@ export default async function PostPage(props: Props) {
         <p className="text-xl text-on-surface-variant mb-10 leading-relaxed font-[var(--font-body)]">
           {post.description}
         </p>
-        <div className="flex items-center gap-x-4 bg-surface-low rounded-2xl p-5">
+        <Link href={`/users/${post.user.id}`} className="flex items-center gap-x-4 bg-surface-low rounded-2xl p-5 hover:bg-surface-low/80 transition-colors">
           {post.user.image ? (
             <Image
               src={post.user.image}
@@ -114,6 +114,7 @@ export default async function PostPage(props: Props) {
               className="h-12 w-12 rounded-full bg-surface-low object-cover"
               width={48}
               height={48}
+              unoptimized={post.user.image.startsWith("data:")}
             />
           ) : (
             <div className="h-12 w-12 rounded-full bg-primary-fixed/30 flex items-center justify-center">
@@ -128,7 +129,7 @@ export default async function PostPage(props: Props) {
               Published on {publishDate}
             </time>
           </div>
-        </div>
+        </Link>
       </header>
 
       <div
