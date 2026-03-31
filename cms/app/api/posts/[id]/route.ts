@@ -19,7 +19,8 @@ export async function GET(
       include: { tags: { include: { tag: true } } },
     });
 
-    if (!post || post.userId !== session.user.id) {
+    const isAdmin = (session.user as any).role === "ADMIN";
+    if (!post || (post.userId !== session.user.id && !isAdmin)) {
       return new Response("Not found", { status: 404 });
     }
 
@@ -42,7 +43,8 @@ export async function PUT(
 
   try {
     const post = await prisma.post.findUnique({ where: { id } });
-    if (!post || post.userId !== session.user.id) {
+    const isAdmin = (session.user as any).role === "ADMIN";
+    if (!post || (post.userId !== session.user.id && !isAdmin)) {
       return new Response("Not found", { status: 404 });
     }
 
@@ -90,7 +92,8 @@ export async function DELETE(
 
   try {
     const post = await prisma.post.findUnique({ where: { id } });
-    if (!post || post.userId !== session.user.id) {
+    const isAdmin = (session.user as any).role === "ADMIN";
+    if (!post || (post.userId !== session.user.id && !isAdmin)) {
       return new Response("Not found", { status: 404 });
     }
 

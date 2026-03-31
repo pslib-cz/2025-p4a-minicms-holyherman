@@ -25,8 +25,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           where: { email: credentials.email as string },
         });
 
-        // User not found or is OAuth-only account (no password set)
-        if (!user || !user.password) return null;
+        // User not found or created via OAuth (no password)
+        if (!user || (!user.password && user.email)) return null;
 
         const isValid = await bcrypt.compare(
           credentials.password as string,

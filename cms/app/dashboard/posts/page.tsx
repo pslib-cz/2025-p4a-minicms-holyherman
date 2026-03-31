@@ -11,6 +11,7 @@ type Post = {
   concept: boolean;
   publishDate: string | null;
   tags: { tag: { id: string; name: string } }[];
+  user?: { name: string | null; email: string | null };
 };
 
 export default function PostsPage() {
@@ -18,6 +19,7 @@ export default function PostsPage() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const fetchPosts = async (p: number) => {
     setLoading(true);
@@ -27,6 +29,7 @@ export default function PostsPage() {
         const data = await res.json();
         setPosts(data.posts);
         setTotalPages(data.totalPages || 1);
+        setIsAdmin(data.isAdmin || false);
       }
     } catch (error) {
       console.error("Failed to fetch posts:", error);
@@ -54,11 +57,13 @@ export default function PostsPage() {
     }
   };
 
+  const colSpan = isAdmin ? 6 : 5;
+
   return (
     <div>
       <div className="flex justify-between mb-8 items-center">
         <h2 className="font-[var(--font-display)] text-2xl font-bold text-on-surface">
-          My Posts
+          {isAdmin ? "All Posts (Admin)" : "My Posts"}
         </h2>
         <Link
           href="/dashboard/posts/new"
@@ -77,6 +82,9 @@ export default function PostsPage() {
             <thead>
               <tr className="bg-surface-low">
                 <th className="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-on-surface-variant font-[var(--font-body)]">Title</th>
+                {isAdmin && (
+                  <th className="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-on-surface-variant font-[var(--font-body)]">Author</th>
+                )}
                 <th className="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-on-surface-variant font-[var(--font-body)]">Status</th>
                 <th className="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-on-surface-variant font-[var(--font-body)]">Tags</th>
                 <th className="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-on-surface-variant font-[var(--font-body)]">Date</th>
@@ -86,14 +94,16 @@ export default function PostsPage() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="text-center py-16">
+                  <td colSpan={colSpan} className="text-center py-16">
                     <div className="inline-block w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>
                   </td>
                 </tr>
               ) : posts.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="text-center py-12">
-                    <p className="text-on-surface-variant font-[var(--font-body)] mb-4">You haven't created any posts yet.</p>
+                  <td colSpan={colSpan} className="text-center py-12">
+                    <p className="text-on-surface-variant font-[var(--font-body)] mb-4">
+                      {isAdmin ? "No posts found in the system." : "You haven't created any posts yet."}
+                    </p>
                     <Link href="/dashboard/posts/new" className="text-primary font-semibold hover:text-primary-container transition-colors">
                       Create your first post
                     </Link>
@@ -101,15 +111,16 @@ export default function PostsPage() {
                 </tr>
               ) : (
                 posts.map((post, i) => (
-                  <tr
-                    key={post.id}
-                    className={i < posts.length - 1 ? "" : ""}
-                    style={i < posts.length - 1 ? {} : {}}
-                  >
+                  <tr key={post.id}>
                     <td className="px-6 py-5">
                       <p className="font-semibold text-on-surface text-sm">{post.title}</p>
                       <p className="text-xs text-on-surface-variant mt-0.5 font-[var(--font-body)]">/{post.slug}</p>
                     </td>
+                    {isAdmin && (
+                      <td className="px-6 py-5 text-sm text-on-surface-variant font-[var(--font-body)]">
+                        {post.user?.name || post.user?.email || "—"}
+                      </td>
+                    )}
                     <td className="px-6 py-5">
                       {post.concept ? (
                         <span className="inline-flex px-3 py-1 rounded-full text-xs font-bold bg-secondary-container/20 text-secondary uppercase tracking-wider">Draft</span>

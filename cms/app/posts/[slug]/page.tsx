@@ -89,6 +89,25 @@ export default async function PostPage(props: Props) {
           Back to Articles
         </Link>
       </div>
+
+      {/* Edit button for Admins and Authors */}
+      {session && (
+        (session.user as any).role === "ADMIN" ||
+        (session.user as any).id === post.userId
+      ) && (
+        <div className="mb-6 flex justify-end">
+          <Link
+            href={`/dashboard/posts/${post.id}/edit`}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full gradient-primary text-sm font-semibold text-on-primary hover:opacity-90 transition-opacity"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            Edit Post
+          </Link>
+        </div>
+      )}
+
       <header className="mb-16">
         <div className="flex gap-2 mb-7 flex-wrap">
           {post.tags.map(({ tag }: any) => (

@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mini CMS Platform
 
-## Getting Started
+Moderní redakční systém postavený na **Next.js 16**, **Prisma ORM** a **Material UI**. Aplikace podporuje kompletní správu obsahu, uživatelské role a plně responzivní rozhraní s podporou tmavého režimu.
 
-First, run the development server:
+## Architektura aplikace
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Aplikace je tvořena třemi hlavními komponentami:
+1. **Veřejná část:** Implementována pomocí Server Components pro maximální rychlost a SEO. Zahrnuje výpis článků, vyhledávání podle tagů a systém komentářů.
+2. **Interní dashboard:** Zabezpečená zóna pro správu obsahu s WYSIWYG editorem (Tiptap). Obsahuje pokročilé úpravy layoutu pro pohodlnou práci (scrollbar lock, padding fix).
+3. **API (Route Handlers):** Backendové rozhraní implementující bezpečný přenos dat, validaci vstupů (`zod`) a kontrolu oprávnění (RBAC).
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Správa Rolí (RBAC)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Systém automaticky rozlišuje mezi dvěma úrovněmi přístupu:
+- **USER:** Vidí a spravuje pouze své vlastní vytvořené příspěvky.
+- **ADMIN:** Má absolutní kontrolu nad celou platformou. Vidí příspěvky všech autorů, může je editovat i mazat. V Dashboardu vidí rozšířené statistiky a jména autorů.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Seznam klíčových funkcí
 
-## Learn More
+- **Dark Mode Integration:** Plná podpora tmavého režimu v celém rozhraní (Tailwind i Material UI). Přepínač je přístupný z hlavičky dashboardu i z profilu.
+- **Quick Edit:** Admini a autoři vidí přímo na veřejném webu u svých článků tlačítko pro rychlý přechod do editoru.
+- **WYSIWYG Editor:** Bohatý editor textu (Tiptap) s podporou formátování, odkazů a seznamů, plně optimalizovaný pro tmavý režim.
+- **SEO & Social:** Automatické generování metadat, podpora OpenGraph a validní HTML5 sémantika.
+- **Komentářový systém:** Umožňuje interakci čtenářů s autory u každého publikovaného článku.
 
-To learn more about Next.js, take a look at the following resources:
+## Datový model (Prisma)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **User / Session:** Autentizace a správa rolí (`USER` / `ADMIN`).
+- **Post:** Obsah, metadata a stav publikace.
+- **Tag / PostTag:** Systém štítkování a kategorizace (M:N).
+- **Comment:** Diskusní vlákna u příspěvků.

@@ -34,7 +34,11 @@ export default async function LoginPage({
             action={async (formData) => {
               "use server";
               try {
-                await signIn("credentials", formData);
+                await signIn("credentials", {
+                  email: formData.get("email"),
+                  password: formData.get("password"),
+                  redirectTo: "/dashboard",
+                });
               } catch (error) {
                 if (error instanceof AuthError) {
                   if (error.type === "CredentialsSignin") {
