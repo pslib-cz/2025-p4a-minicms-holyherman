@@ -2,7 +2,9 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Underline from "@tiptap/extension-underline";
-import { useEffect } from "react";
+import Color from "@tiptap/extension-color";
+import { TextStyle } from "@tiptap/extension-text-style";
+import { useEffect, useState, useRef } from "react";
 
 interface EditorProps {
   content: string;
@@ -39,12 +41,106 @@ function ToolbarButton({
   );
 }
 
+const COLORS = [
+  { label: "Default", value: "" },
+  { label: "Red", value: "#dc2626" },
+  { label: "Orange", value: "#ea580c" },
+  { label: "Amber", value: "#d97706" },
+  { label: "Green", value: "#16a34a" },
+  { label: "Emerald", value: "#006c49" },
+  { label: "Blue", value: "#2563eb" },
+  { label: "Purple", value: "#9333ea" },
+  { label: "Pink", value: "#db2777" },
+  { label: "Gray", value: "#6b7280" },
+];
+
+function ColorPicker({
+  editor,
+}: {
+  editor: ReturnType<typeof useEditor>;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  if (!editor) return null;
+
+  const currentColor = editor.getAttributes("textStyle").color || "";
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        title="Text Color"
+        className={`p-1.5 rounded-lg transition-colors flex items-center gap-0.5 ${
+          currentColor
+            ? "text-primary bg-primary-fixed/20"
+            : "text-on-surface-variant hover:text-primary hover:bg-surface-low"
+        }`}
+      >
+        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M11 2L5.5 16h2.25l1.12-3h6.25l1.12 3h2.25L13 2h-2zm-1.38 9L12 4.67 14.38 11H9.62z" />
+        </svg>
+        <div
+          className="w-3 h-1.5 rounded-sm"
+          style={{ backgroundColor: currentColor || "currentColor" }}
+        />
+      </button>
+      {open && (
+        <div className="absolute top-full left-0 mt-1 bg-surface-lowest rounded-xl shadow-ambient-lg p-2 z-20 grid grid-cols-5 gap-1 min-w-[140px]">
+          {COLORS.map((color) => (
+            <button
+              key={color.value || "default"}
+              type="button"
+              title={color.label}
+              onClick={() => {
+                if (color.value) {
+                  editor.chain().focus().setColor(color.value).run();
+                } else {
+                  editor.chain().focus().unsetColor().run();
+                }
+                setOpen(false);
+              }}
+              className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${
+                currentColor === color.value
+                  ? "border-primary scale-110"
+                  : "border-outline-variant/30"
+              }`}
+              style={{
+                backgroundColor: color.value || undefined,
+              }}
+            >
+              {!color.value && (
+                <svg className="w-full h-full p-0.5 text-on-surface-variant" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function RichTextEditor({ content, onChange }: EditorProps) {
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
       StarterKit,
       Underline,
+      TextStyle,
+      Color,
       Link.configure({
         openOnClick: false,
       }),
@@ -79,9 +175,35 @@ export default function RichTextEditor({ content, onChange }: EditorProps) {
     editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
   };
 
+  const headingLevels = [1, 2, 3] as const;
+
   return (
     <div className="rounded-2xl ghost-border overflow-hidden">
-      <div className="flex flex-wrap gap-0.5 p-2 bg-surface-low">
+      <div className="flex flex-wrap gap-0.5 p-2 bg-surface-low items-center">
+        {/* Heading buttons */}
+        {headingLevels.map((level) => (
+          <ToolbarButton
+            key={level}
+            onClick={() => editor.chain().focus().toggleHeading({ level }).run()}
+            active={editor.isActive("heading", { level })}
+            title={`Heading ${level}`}
+          >
+            <span className="text-xs font-bold w-4 h-4 flex items-center justify-center">
+              H{level}
+            </span>
+          </ToolbarButton>
+        ))}
+        <ToolbarButton
+          onClick={() => editor.chain().focus().setParagraph().run()}
+          active={editor.isActive("paragraph") && !editor.isActive("heading")}
+          title="Paragraph"
+        >
+          <span className="text-xs font-bold w-4 h-4 flex items-center justify-center">P</span>
+        </ToolbarButton>
+
+        <div className="w-px h-6 bg-outline-variant/30 mx-1 self-center" />
+
+        {/* Text formatting */}
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
           active={editor.isActive("bold")}
@@ -113,6 +235,12 @@ export default function RichTextEditor({ content, onChange }: EditorProps) {
 
         <div className="w-px h-6 bg-outline-variant/30 mx-1 self-center" />
 
+        {/* Color picker */}
+        <ColorPicker editor={editor} />
+
+        <div className="w-px h-6 bg-outline-variant/30 mx-1 self-center" />
+
+        {/* Blocks */}
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleCode().run()}
           active={editor.isActive("code")}
@@ -151,6 +279,7 @@ export default function RichTextEditor({ content, onChange }: EditorProps) {
 
         <div className="w-px h-6 bg-outline-variant/30 mx-1 self-center" />
 
+        {/* Undo/Redo */}
         <ToolbarButton
           onClick={() => editor.chain().focus().undo().run()}
           disabled={!editor.can().undo()}
