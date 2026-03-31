@@ -10,7 +10,6 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
-
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const params = await props.params;
   const post = await prisma.post.findUnique({
@@ -52,8 +51,8 @@ export default async function PostPage(props: Props) {
       tags: { include: { tag: true } },
       comments: {
         include: { user: true },
-        orderBy: { createdAt: "desc" }
-      }
+        orderBy: { createdAt: "desc" },
+      },
     },
   });
 
@@ -74,7 +73,9 @@ export default async function PostPage(props: Props) {
     orderBy: { createdAt: "desc" },
   });
 
-  const publishDate = post.publishDate ? new Date(post.publishDate).toLocaleDateString() : "";
+  const publishDate = post.publishDate
+    ? new Date(post.publishDate).toLocaleDateString()
+    : "";
 
   return (
     <article className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
@@ -83,30 +84,49 @@ export default async function PostPage(props: Props) {
           href="/"
           className="inline-flex items-center text-sm font-semibold text-on-surface-variant hover:text-primary transition-colors"
         >
-          <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          <svg
+            className="w-4 h-4 mr-1.5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            />
           </svg>
           Back to Articles
         </Link>
       </div>
 
-      {/* Edit button for Admins and Authors */}
-      {session && (
-        (session.user as any).role === "ADMIN" ||
-        (session.user as any).id === post.userId
-      ) && (
-        <div className="mb-6 flex justify-end">
-          <Link
-            href={`/dashboard/posts/${post.id}/edit`}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full gradient-primary text-sm font-semibold text-on-primary hover:opacity-90 transition-opacity"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-            Edit Post
-          </Link>
-        </div>
-      )}
+      {session &&
+        ((session.user as any).role === "ADMIN" ||
+          (session.user as any).id === post.userId) && (
+          <div className="mb-6 flex justify-end">
+            <Link
+              href={`/dashboard/posts/${post.id}/edit`}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full gradient-primary text-sm font-semibold text-on-primary hover:opacity-90 transition-opacity"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
+              </svg>
+              Edit Post
+            </Link>
+          </div>
+        )}
 
       <header className="mb-16">
         <div className="flex gap-2 mb-7 flex-wrap">
@@ -119,13 +139,19 @@ export default async function PostPage(props: Props) {
             </span>
           ))}
         </div>
-        <h1 className="font-[var(--font-display)] text-4xl sm:text-5xl font-extrabold tracking-tight text-on-surface mb-7" style={{ letterSpacing: "-0.02em" }}>
+        <h1
+          className="font-[var(--font-display)] text-4xl sm:text-5xl font-extrabold tracking-tight text-on-surface mb-7"
+          style={{ letterSpacing: "-0.02em" }}
+        >
           {post.title}
         </h1>
         <p className="text-xl text-on-surface-variant mb-10 leading-relaxed font-[var(--font-body)]">
           {post.description}
         </p>
-        <Link href={`/users/${post.user.id}`} className="flex items-center gap-x-4 bg-surface-low rounded-2xl p-5 hover:bg-surface-low/80 transition-colors">
+        <Link
+          href={`/users/${post.user.id}`}
+          className="flex items-center gap-x-4 bg-surface-low rounded-2xl p-5 hover:bg-surface-low/80 transition-colors"
+        >
           {post.user.image ? (
             <Image
               src={post.user.image}
@@ -137,14 +163,19 @@ export default async function PostPage(props: Props) {
             />
           ) : (
             <div className="h-12 w-12 rounded-full bg-primary-fixed/30 flex items-center justify-center">
-              <span className="text-primary font-semibold text-lg">{post.user.name?.[0] || "?"}</span>
+              <span className="text-primary font-semibold text-lg">
+                {post.user.name?.[0] || "?"}
+              </span>
             </div>
           )}
           <div>
             <p className="font-semibold text-on-surface">
               {post.user.name || "Anonymous"}
             </p>
-            <time dateTime={post.publishDate?.toISOString()} className="text-sm text-on-surface-variant">
+            <time
+              dateTime={post.publishDate?.toISOString()}
+              className="text-sm text-on-surface-variant"
+            >
               Published on {publishDate}
             </time>
           </div>
@@ -158,18 +189,34 @@ export default async function PostPage(props: Props) {
 
       {relatedPosts.length > 0 && (
         <div className="mt-20 pt-10">
-          <h3 className="font-[var(--font-display)] text-xl font-bold text-on-surface mb-8">Related Articles</h3>
+          <h3 className="font-[var(--font-display)] text-xl font-bold text-on-surface mb-8">
+            Related Articles
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {relatedPosts.map((rp: any) => (
-              <Link key={rp.id} href={`/posts/${rp.slug}`} className="block group">
+              <Link
+                key={rp.id}
+                href={`/posts/${rp.slug}`}
+                className="block group"
+              >
                 <div className="bg-surface-lowest rounded-2xl p-6 shadow-ambient transition-all group-hover:shadow-ambient-lg h-full flex flex-col justify-between">
                   <div>
-                    <h4 className="font-[var(--font-display)] font-bold text-lg text-on-surface mb-2 line-clamp-2 group-hover:text-primary transition-colors">{rp.title}</h4>
-                    <p className="text-sm text-on-surface-variant line-clamp-2 mb-5 font-[var(--font-body)]">{rp.description}</p>
+                    <h4 className="font-[var(--font-display)] font-bold text-lg text-on-surface mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                      {rp.title}
+                    </h4>
+                    <p className="text-sm text-on-surface-variant line-clamp-2 mb-5 font-[var(--font-body)]">
+                      {rp.description}
+                    </p>
                   </div>
                   <div className="flex items-center justify-between text-xs text-on-surface-variant">
-                    <span className="font-semibold">{rp.user.name || "Anonymous"}</span>
-                    <time dateTime={rp.publishDate?.toISOString()}>{rp.publishDate ? new Date(rp.publishDate).toLocaleDateString() : ""}</time>
+                    <span className="font-semibold">
+                      {rp.user.name || "Anonymous"}
+                    </span>
+                    <time dateTime={rp.publishDate?.toISOString()}>
+                      {rp.publishDate
+                        ? new Date(rp.publishDate).toLocaleDateString()
+                        : ""}
+                    </time>
                   </div>
                 </div>
               </Link>

@@ -3,6 +3,9 @@ import { Plus_Jakarta_Sans, Manrope } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/app/components/Navbar";
 import { ThemeProvider } from "@/app/components/ThemeProvider";
+import CookieConsent from "@/app/components/CookieConsent";
+import GoogleAnalytics from "@/app/components/GoogleAnalytics";
+import { Suspense } from "react";
 
 const plusJakarta = Plus_Jakarta_Sans({
   variable: "--font-display",
@@ -37,8 +40,12 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-surface text-on-surface">
         <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
+          <Suspense fallback={null}>
+            <GoogleAnalytics />
+          </Suspense>
           <Navbar />
           {children}
+          <CookieConsent />
         </ThemeProvider>
       </body>
     </html>
